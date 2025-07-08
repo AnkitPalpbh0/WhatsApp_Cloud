@@ -1,0 +1,57 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.4.8-SNAPSHOT'
+	id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'com.WhatsAppBusiness'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(17)
+	}
+}
+
+repositories {
+	mavenCentral()
+	maven { url = 'https://repo.spring.io/snapshot' }
+	maven { url 'https://jitpack.io' }
+	google()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
+	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5' // or jjwt-gson
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.liquibase:liquibase-core'
+	implementation 'org.springframework.kafka:spring-kafka'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
+	runtimeOnly 'org.postgresql:postgresql'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.kafka:spring-kafka-test'
+	testImplementation 'org.springframework.security:spring-security-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+	implementation 'com.github.Bindambc:whatsapp-business-java-api:v0.6.1'
+	implementation 'io.micrometer:micrometer-registry-prometheus'
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation("io.opentelemetry.instrumentation:opentelemetry-instrumentation-api:2.16.0")
+
+	implementation 'com.google.firebase:firebase-messaging:23.3.1'
+	implementation 'com.google.auth:google-auth-library-oauth2-http:1.17.0'
+	implementation 'com.google.firebase:firebase-admin:9.2.0'
+	implementation 'com.google.api-client:google-api-client:1.34.0' // Or latest version
+	implementation 'com.google.http-client:google-http-client-jackson2:1.43.2'
+
+	implementation 'org.springframework.boot:spring-boot-starter-amqp'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}

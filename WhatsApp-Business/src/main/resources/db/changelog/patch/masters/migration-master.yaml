@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/patch/migrations/users/create-users.sql
+  - include:
+      file: db/changelog/patch/migrations/chats/create-chats.sql
+  - include:
+      file: db/changelog/patch/migrations/media/create-media.sql
+  - include:
+      file: db/changelog/patch/migrations/message/create-message.sql

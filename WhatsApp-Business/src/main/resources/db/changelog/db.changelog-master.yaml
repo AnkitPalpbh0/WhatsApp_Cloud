@@ -1,0 +1,5 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/patch/masters/migration-master.yaml
+#  - include:
+#      file: db/changelog/patch/masters/seeder-master.yaml

@@ -1,0 +1,11 @@
+1. Download project with dependencies
+2. Setup JDK 17 and reload gradle wrapper
+3. Run gradle wrapper
+4. Setup database
+5. Write migrations
+6. Run application
+
+1. Meta developer account setup
+2. Add whatsapp cloud api sdk
+2. add credentials in .env 
+3. send message via api

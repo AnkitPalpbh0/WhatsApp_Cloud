@@ -1,0 +1,8 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'whatsapp-app'
+    metrics_path: '/actuator/prometheus'
+    static_configs:
+      - targets: ['192.168.241.180:8080']  # Update to your host and port
