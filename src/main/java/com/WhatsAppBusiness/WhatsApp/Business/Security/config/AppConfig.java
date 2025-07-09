@@ -1,6 +1,9 @@
 package com.WhatsAppBusiness.WhatsApp.Business.Security.config;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -19,14 +22,19 @@ import java.util.Collections;
 @Configuration
 public class AppConfig {
 
+    Logger logger = LoggerFactory.getLogger(AppConfig.class);
+
+    @Value("${cors.allowed.origin}")
+    private String allowedOrigin;
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http.sessionManagement(
                 management -> management.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
-//                        .requestMatchers("/api/**")
-//                        .authenticated()
+                        .requestMatchers("/api/**")
+                        .authenticated()
                         .anyRequest().permitAll())
                 .addFilterBefore(new JwtValidator(), BasicAuthenticationFilter.class)
                 .csrf(csrf -> csrf.disable())
@@ -35,9 +43,10 @@ public class AppConfig {
                     @Override
                     public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
                         CorsConfiguration cfg = new CorsConfiguration();
-
-                        cfg.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
-                        cfg.setAllowedOriginPatterns(Arrays.asList("http://localhost:3000"));
+                        logger.info("allowedOrigin: " + allowedOrigin);
+                        // Use allowedOrigin from .env/properties
+                        cfg.setAllowedOrigins(Arrays.asList(allowedOrigin));
+                        cfg.setAllowedOriginPatterns(Arrays.asList(allowedOrigin));
 
                         cfg.setAllowedMethods(Collections.singletonList("*"));
                         cfg.setAllowedHeaders(Collections.singletonList("*"));

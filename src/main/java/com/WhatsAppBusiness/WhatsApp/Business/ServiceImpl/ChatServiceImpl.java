@@ -2,10 +2,14 @@ package com.WhatsAppBusiness.WhatsApp.Business.ServiceImpl;
 
 import com.WhatsAppBusiness.WhatsApp.Business.Common.Exceptions.ChatException;
 import com.WhatsAppBusiness.WhatsApp.Business.Common.Exceptions.UserException;
+import com.WhatsAppBusiness.WhatsApp.Business.DTOs.ChatMessageResponse;
 import com.WhatsAppBusiness.WhatsApp.Business.DTOs.GroupChatRequest;
+import com.WhatsAppBusiness.WhatsApp.Business.DTOs.UserChatsResponse;
 import com.WhatsAppBusiness.WhatsApp.Business.Model.Chat;
+import com.WhatsAppBusiness.WhatsApp.Business.Model.Message;
 import com.WhatsAppBusiness.WhatsApp.Business.Model.Users;
 import com.WhatsAppBusiness.WhatsApp.Business.Repository.ChatRepository;
+import com.WhatsAppBusiness.WhatsApp.Business.Repository.MessageRepository;
 import com.WhatsAppBusiness.WhatsApp.Business.Repository.UserRepository;
 import com.WhatsAppBusiness.WhatsApp.Business.Service.ChatService;
 import com.WhatsAppBusiness.WhatsApp.Business.Service.UserService;
@@ -13,43 +17,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ChatServiceImpl implements ChatService {
-//    @Override
-//    public Chat createChat(Users reqUser, Integer userId) {
-//        return null;
-//    }
-//
-//    @Override
-//    public Chat createGroup(GroupChatRequest groupChatRequest, Users reqUser) {
-//        return null;
-//    }
-//
-//    @Override
-//    public Chat findChatById(int chatId) {
-//        return null;
-//    }
-//
-//    @Override
-//    public List<Chat> findAllChatByUserId(Integer id) {
-//        return List.of();
-//    }
-//
-//    @Override
-//    public Chat addUserToGroup(Integer userId, Integer chatId, Users reqUser) {
-//        return null;
-//    }
-//
-//    @Override
-//    public Chat removeFromGroup(Integer userId, Integer chatId, Users reqUser) {
-//        return null;
-//    }
-//
-//    @Override
-//    public void deleteChat(Integer chatId, Integer id) {
-//
-//    }
 
     @Autowired
     private ChatRepository chatRepository;
@@ -57,23 +28,13 @@ public class ChatServiceImpl implements ChatService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private MessageRepository messageRepository;
+
     @Override
     public Chat createChat(Users reqUser, Integer userId) {
 
-        Users user = this.userRepository.findUserById(userId);
-
-//        Chat isChatExist = this.chatRepository.findSingleChatByUserIds(user, reqUser);
-
-//        System.out.println(isChatExist);
-//        if (isChatExist != null) {
-//            return isChatExist;
-//        }
-
         Chat chat = new Chat();
-//        chat.setCreatedBy(reqUser);
-//        chat.getUsers().add(user);
-//        chat.getUsers().add(reqUser);
-//        chat.setGroup(false);
 
         chat = this.chatRepository.save(chat);
 
@@ -98,12 +59,6 @@ public class ChatServiceImpl implements ChatService {
     @Override
     public Chat createGroup(GroupChatRequest req, Users reqUser) {
         Chat group = new Chat();
-//        group.setGroup(true);
-//        group.setChatImage(req.getChatImage());
-//        group.setChatName(req.getChatName());
-//        group.setCreatedBy(reqUser);
-//        group.getAdmins().add(reqUser);
-
         for (Integer userId : req.getUserIds()) {
             Users user = this.userRepository.findUserById(userId);
 //            group.getUsers().add(user);
@@ -117,47 +72,14 @@ public class ChatServiceImpl implements ChatService {
     public Chat addUserToGroup(Integer userId, Integer chatId, Users reqUser) throws ChatException {
         Chat chat = this.chatRepository.findById(chatId)
                 .orElseThrow(() -> new ChatException("The expected chat is not found"));
-
-        Users user = this.userRepository.findUserById(userId);
-
-//        if (chat.getAdmins().contains((reqUser))) {
-//            chat.getUsers().add(user);
-//            return chat;
-//        } else {
-//            throw new UserException("You have not access to add user");
-//        }
         return null;
     }
-
-//    public Chat renameGroup(Integer chatId, String groupName, Users reqUser) throws ChatException, UserException {
-//        Chat chat = this.chatRepository.findById(chatId)
-//                .orElseThrow(() -> new ChatException("The expected chat is not found"));
-//
-//        if (chat.getUsers().contains(reqUser)) {
-//            chat.setChatName(groupName);
-//            return this.chatRepository.save(chat);
-//        } else {
-//            throw new UserException("YOu are not the user");
-//        }
-//    }
 
     @Override
     public Chat removeFromGroup(Integer chatId, Integer userId, Users reqUser) throws ChatException, UserException {
         Chat chat = this.chatRepository.findById(chatId)
                 .orElseThrow(() -> new ChatException("The expected chat is not found"));
 
-        Users user = this.userRepository.findUserById(userId);
-
-//        if (chat.getAdmins().contains((reqUser))) {
-//            chat.getUsers().remove(user);
-//            return chat;
-//        } else if (chat.getUsers().contains(reqUser)) {
-//            if (user.getId() == reqUser.getId()) {
-//                chat.getUsers().remove(user);
-//                return this.chatRepository.save(chat);
-//            }
-//
-//        }
         throw new UserException("You have not access to remove user");
 
     }
@@ -167,5 +89,34 @@ public class ChatServiceImpl implements ChatService {
         Chat chat = this.chatRepository.findById(chatId)
                 .orElseThrow(() -> new ChatException("The expected chat is not found while deleteing"));
         this.chatRepository.delete(chat);
+    }
+
+    public Chat findByChatNumber(String to) {
+        return this.chatRepository.findByChatNumber(to);
+    }
+
+    @Override
+    public List<ChatMessageResponse> getChatsMessages(Integer chatId, Users user) {
+        Chat chat = this.chatRepository.findChatById(chatId);
+
+        List<Message> messages = this.messageRepository.findByChatId(chat.getId());
+        return messages.stream().map(message -> new ChatMessageResponse(
+                message.getId(),
+                message.getMessageId(),
+                message.getMessageType(),
+                message.getContent(),
+                message.getMedia() != null ? message.getMedia().getUrl() : null,  // Assuming MediaMetadata has getUrl()
+                message.getTimestamp(),
+                message.getStatus()
+        )).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<UserChatsResponse> getUserChats(Users user) {
+        List<Chat> chats = this.chatRepository.findChatByUserId(user.getId());
+        return chats.stream().map(chat -> new UserChatsResponse(
+                chat.getId(),
+                chat.getChatNumber()
+        )).collect(Collectors.toList());
     }
 }

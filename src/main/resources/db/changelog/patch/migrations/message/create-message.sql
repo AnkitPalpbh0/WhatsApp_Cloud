@@ -1,6 +1,8 @@
 CREATE TABLE message (
     id SERIAL PRIMARY KEY,
     chat_id INT NOT NULL,
+    message_id VARCHAR NOT NULL,
+    status VARCHAR(50),
     message_type VARCHAR(50),
     content TEXT,
     media_id INT,

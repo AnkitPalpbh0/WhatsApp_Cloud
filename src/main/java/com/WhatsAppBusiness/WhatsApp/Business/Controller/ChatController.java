@@ -2,9 +2,7 @@ package com.WhatsAppBusiness.WhatsApp.Business.Controller;
 
 import com.WhatsAppBusiness.WhatsApp.Business.Common.Exceptions.ChatException;
 import com.WhatsAppBusiness.WhatsApp.Business.Common.Exceptions.UserException;
-import com.WhatsAppBusiness.WhatsApp.Business.DTOs.ApiResponse;
-import com.WhatsAppBusiness.WhatsApp.Business.DTOs.GroupChatRequest;
-import com.WhatsAppBusiness.WhatsApp.Business.DTOs.SingleChatRequest;
+import com.WhatsAppBusiness.WhatsApp.Business.DTOs.*;
 import com.WhatsAppBusiness.WhatsApp.Business.Model.Chat;
 import com.WhatsAppBusiness.WhatsApp.Business.Model.Users;
 import com.WhatsAppBusiness.WhatsApp.Business.Service.ChatService;
@@ -26,70 +24,27 @@ public class ChatController {
     @Autowired
     private UserService userService;
 
-    @PostMapping("/single")
-    public ResponseEntity<Chat> createChatHandler(@RequestBody SingleChatRequest singleChatRequest,
-                                                  @RequestHeader("Authorization") String jwt) throws UserException, UserException {
-
-        Users reqUser = this.userService.findUserProfile(jwt);
-
-        Chat chat = this.chatService.createChat(reqUser, singleChatRequest.getUserId());
-
-        return new ResponseEntity<Chat>(chat, HttpStatus.CREATED);
-    }
-
-    @PostMapping("/group")
-    public ResponseEntity<Chat> createGroupHandler(@RequestBody GroupChatRequest groupChatRequest,
-            @RequestHeader("Authorization") String jwt) throws UserException {
-
-        System.out.println(groupChatRequest);
-        Users reqUser = this.userService.findUserProfile(jwt);
-
-        Chat chat = this.chatService.createGroup(groupChatRequest, reqUser);
-
-        return new ResponseEntity<Chat>(chat, HttpStatus.CREATED);
-    }
-
     @GetMapping("/{chatId}")
-    public ResponseEntity<Chat> findChatByIdHandler(@PathVariable int chatId) throws ChatException {
+    public ResponseEntity<List<ChatMessageResponse>> getChatMessageHandler(@PathVariable Integer chatId,
+                                                                           @RequestHeader("Authorization") String jwt) throws UserException, ChatException {
 
-        Chat chat = this.chatService.findChatById(chatId);
+        Users user = this.userService.findUserProfile(jwt);
 
-        return new ResponseEntity<Chat>(chat, HttpStatus.OK);
+        List<ChatMessageResponse> messages = this.chatService.getChatsMessages(chatId, user);
+
+        return new ResponseEntity<>(messages, HttpStatus.OK);
     }
 
-    @GetMapping("/user")
-    public ResponseEntity<List<Chat>> findChatByUserIdHandler(@RequestHeader("Authorization") String jwt)
-            throws UserException {
+    @GetMapping("/chats/{userId}")
+    public ResponseEntity<List<UserChatsResponse>> getUserChatsHandler(@PathVariable Integer userId,
+                                                                       @RequestHeader("Authorization") String jwt) throws UserException, ChatException {
 
-        Users reqUser = this.userService.findUserProfile(jwt);
+        Users user = this.userService.findUserProfile(jwt);
 
-        List<Chat> chats = this.chatService.findAllChatByUserId(reqUser.getId());
+        List<UserChatsResponse> messages = this.chatService.getUserChats(user);
 
-        return new ResponseEntity<List<Chat>>(chats, HttpStatus.OK);
-    }
+        return new ResponseEntity<>(messages, HttpStatus.OK);
 
-    @PutMapping("/{chatId}/add/{userId}")
-    public ResponseEntity<Chat> addUserToGroupHandler(@PathVariable Integer chatId,
-            @PathVariable Integer userId, @RequestHeader("Authorization") String jwt)
-            throws UserException, ChatException {
-
-        Users reqUser = this.userService.findUserProfile(jwt);
-
-        Chat chat = this.chatService.addUserToGroup(userId, chatId, reqUser);
-
-        return new ResponseEntity<>(chat, HttpStatus.OK);
-    }
-
-    @PutMapping("/{chatId}/remove/{userId}")
-    public ResponseEntity<Chat> removeUserFromGroupHandler(@PathVariable Integer chatId,
-            @PathVariable Integer userId, @RequestHeader("Authorization") String jwt)
-            throws UserException, ChatException {
-
-        Users reqUser = this.userService.findUserProfile(jwt);
-
-        Chat chat = this.chatService.removeFromGroup(userId, chatId, reqUser);
-
-        return new ResponseEntity<>(chat, HttpStatus.OK);
     }
 
     @DeleteMapping("/delete/{chatId}")

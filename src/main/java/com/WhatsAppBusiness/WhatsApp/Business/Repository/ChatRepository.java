@@ -16,6 +16,14 @@ public interface ChatRepository extends JpaRepository<Chat, Integer> {
     @Query("select c from Chat c join c.user u where u.id=:userId")
     public List<Chat> findChatByUserId(@Param("userId") Integer userId);
 
+    @Query("select c from Chat c where c.chatNumber=:to")
+    Chat findByChatNumber(String to);
+
+    @Query(value = "SELECT * FROM chat WHERE RIGHT(chat_number, 6) = :lastSix", nativeQuery = true)
+    Chat findByChatNumberEndingWith(@Param("lastSix") String lastSix);
+
+    Chat findChatById(Integer chatId);
+
 //    @Query("select c from Chat c where c.isGroup=false and :user member of c.users and :reqUser member of c.users")
 //    public Chat findSingleChatByUserIds(@Param("user") Users user, @Param("reqUser") Users reqUser);
 

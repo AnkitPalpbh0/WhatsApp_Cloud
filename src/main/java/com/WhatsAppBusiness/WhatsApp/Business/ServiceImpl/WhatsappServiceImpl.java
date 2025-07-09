@@ -24,7 +24,7 @@ public class WhatsappServiceImpl implements WhatsappService {
     private String phoneNumberId; // sender phone number id
 
     @Override
-    public void sendTextMessage(SendMessageRequest request) throws RuntimeException {
+    public MessageResponse sendTextMessage(SendMessageRequest request) throws RuntimeException {
         try {
             // Build text message
             var message = Message.MessageBuilder.builder()
@@ -37,6 +37,7 @@ public class WhatsappServiceImpl implements WhatsappService {
             MessageResponse response = whatsappSdkConfig.whatsappBusinessCloudApi().sendMessage(phoneNumberId, message);
 
             LOGGER.info("Message sent. Message ID: {}", response.messages().get(0).id());
+            return response;
 
         } catch (Exception e) {
             LOGGER.error("Error sending message", e);

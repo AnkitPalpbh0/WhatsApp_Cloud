@@ -19,6 +19,9 @@ public class Message {
     @Column(name = "message_type")
     private String messageType;
 
+    @Column(name = "message_id")
+    private String messageId;
+
     private String content;
 
     @ManyToOne
@@ -26,6 +29,17 @@ public class Message {
     private MediaMetadata media;
 
     private LocalDateTime timestamp;
+
+    @Column(name = "status")
+    private String status;
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
     public Integer getId() {
         return id;
@@ -74,5 +88,14 @@ public class Message {
     public void setTimestamp(LocalDateTime timestamp) {
         this.timestamp = timestamp;
     }
+
+    public String getMessageId() {
+        return messageId;
+    }
+
+    public void setMessageId(String messageId) {
+        this.messageId = messageId;
+    }
+
 }
 

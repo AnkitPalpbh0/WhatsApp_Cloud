@@ -20,6 +20,9 @@ public class Chat {
     @Column(name = "external_id")
     private UUID externalId;
 
+    @Column(name = "chat_number")
+    private String chatNumber;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
@@ -64,6 +67,14 @@ public class Chat {
 
     public void setMessages(List<Message> messages) {
         this.messages = messages;
+    }
+
+    public String getChatNumber() {
+        return chatNumber;
+    }
+
+    public void setChatNumber(String chatNumber) {
+        this.chatNumber = chatNumber;
     }
 }
 

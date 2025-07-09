@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/auth")
 public class AuthController {
 
     @Autowired
@@ -72,8 +72,6 @@ public class AuthController {
 
         String email = request.getEmail();
         String password = request.getPassword();
-        // System.out.println(email);
-        // System.out.println(password);
 
         Authentication authentication = this.authenticate(email, password);
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -92,9 +90,6 @@ public class AuthController {
         if (userDetails == null) {
             throw new BadCredentialsException("Invalid username");
         }
-
-        // System.out.println(password);
-        // System.out.println(userDetails.getPassword());
         if (!passwordEncoder.matches(password, userDetails.getPassword())) {
             throw new BadCredentialsException("Invalid password or username");
         }
