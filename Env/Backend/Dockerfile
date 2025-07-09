@@ -1,5 +1,5 @@
 FROM eclipse-temurin:17-jdk-alpine
-
+COPY . .
 # Set working directory inside the container
 WORKDIR /app
 
