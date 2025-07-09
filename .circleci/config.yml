@@ -1,0 +1,72 @@
+version: 2.1  
+orbs:
+  aws-ecr: circleci/aws-ecr@7.0.0
+  aws-cli: circleci/aws-cli@2.0.0
+executors:
+  default:
+    docker:
+    - image: alpine:latest 
+commands:
+  install_dependencies_dev:
+    steps:
+      - run: apk add openssh sshpass --no-cache
+
+  install_dependencies_qa:
+    steps:
+      - run: apk add openssh sshpass --no-cache    
+  
+  ssh_instance_dev:
+    steps:
+      - run:
+          name: SSH into remote instance and deploy the latest image from ECR
+          command: |
+            ssh -o StrictHostKeyChecking=no ec2-user@52.73.226.154 './Backend.sh';           
+
+jobs:
+  build-dev:
+    docker:
+      - image: docker:20.10.6
+    steps:
+      - setup_remote_docker
+      - checkout
+      - run:
+          name: Install AWS CLI
+          command: |
+            apk add --no-cache py3-pip
+            pip3 install awscli
+      - aws-cli/setup:
+          aws-access-key-id: AWS_ACCESS_KEY
+          aws-secret-access-key: AWS_SECRET_KEY
+          aws-region: AWS_REGION
+      - run:
+          name: docker build
+          command: |
+            docker build -t whatsapp-backend -f Env/Backend/Dockerfile .
+      - run:
+          name: push
+          command: |
+            aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 561471100036.dkr.ecr.us-east-1.amazonaws.com
+            docker tag whatsapp-backend:latest 561471100036.dkr.ecr.us-east-1.amazonaws.com/whatsapp-backend:latest
+            docker push 561471100036.dkr.ecr.us-east-1.amazonaws.com/whatsapp-backend:latest
+
+  deploy-dev:
+    executor: default
+    steps:
+      - install_dependencies_dev
+      - ssh_instance_dev
+
+
+workflows:
+  version: 2.1
+  build_and_deploy_dev:
+    jobs:
+    - build-dev:
+        filters:
+          branches:
+            only: main
+    - deploy-dev:
+         requires:
+            - build-dev
+         filters:
+           branches:
+             only: main
