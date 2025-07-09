@@ -1,8 +1,9 @@
 FROM eclipse-temurin:17-jdk-alpine
-COPY . .
+
 # Set working directory inside the container
 WORKDIR /app
 
+COPY ..
 # Copy build output (your JAR) into the container
 COPY build/libs/*.jar app.jar
 
