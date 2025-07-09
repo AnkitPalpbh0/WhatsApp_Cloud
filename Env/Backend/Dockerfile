@@ -1,14 +1,25 @@
-FROM eclipse-temurin:17-jdk-alpine
+# Stage 1: Build the application
+FROM gradle:8.2-jdk17-alpine AS builder
 
-# Set working directory inside the container
 WORKDIR /app
 
+# Copy everything needed to build the app
 COPY . .
-# Copy build output (your JAR) into the container
-COPY build/libs/*.jar app.jar
 
-# Expose the port (change if your app runs on another port)
+# Make gradlew executable
+RUN chmod +x ./gradlew
+
+# Run the Gradle build, skipping tests
+RUN ./gradlew clean build -x test
+
+# Stage 2: Create final runtime image
+FROM eclipse-temurin:17-jdk-alpine
+
+WORKDIR /app
+
+# Copy the built JAR from the previous stage
+COPY --from=builder /app/build/libs/*.jar app.jar
+
 EXPOSE 8080
 
-# Run the Spring Boot application
 CMD ["java", "-jar", "app.jar"] 
