@@ -3,6 +3,7 @@ package com.WhatsAppBusiness.WhatsApp.Business.Controller;
 import com.WhatsAppBusiness.WhatsApp.Business.Common.Exceptions.UserException;
 import com.WhatsAppBusiness.WhatsApp.Business.DTOs.AuthResponse;
 import com.WhatsAppBusiness.WhatsApp.Business.DTOs.LoginRequest;
+import com.WhatsAppBusiness.WhatsApp.Business.DTOs.LoginResponse;
 import com.WhatsAppBusiness.WhatsApp.Business.Model.Users;
 import com.WhatsAppBusiness.WhatsApp.Business.Repository.UserRepository;
 import com.WhatsAppBusiness.WhatsApp.Business.Security.config.CustomUserService;
@@ -68,7 +69,7 @@ public class AuthController {
     }
 
     @PostMapping("/signin")
-    public ResponseEntity<AuthResponse> loginHandler(@RequestBody LoginRequest request) {
+    public ResponseEntity<LoginResponse> loginHandler(@RequestBody LoginRequest request) {
 
         String email = request.getEmail();
         String password = request.getPassword();
@@ -78,9 +79,12 @@ public class AuthController {
 
         String jwt = this.tokenProvider.generateToken(authentication);
 
-        AuthResponse response = new AuthResponse(jwt, true);
+        LoginResponse response = new LoginResponse();
+        response.setJwt(jwt);
+        response.setAuth(true);
+        response.setUserId(userRepository.findByEmail(email).getId());
 
-        return new ResponseEntity<AuthResponse>(response, HttpStatus.ACCEPTED);
+        return new ResponseEntity<LoginResponse>(response, HttpStatus.ACCEPTED);
 
     }
 
