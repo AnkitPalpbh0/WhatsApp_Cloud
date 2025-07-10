@@ -44,6 +44,7 @@ public class WebhookEventConsumer {
             LOGGER.info("Successfully deserialized webhook request: {}", webhookResponse);
             Message message = messageRepository.findByMessageId(webhookResponse.getMessageId());
             if (message != null) {
+                LOGGER.info("Updating message status for messageId: {}", webhookResponse.getMessageId());
                 message.setStatus(webhookResponse.getStatus());
                 messageRepository.save(message);
             } else {
@@ -60,6 +61,7 @@ public class WebhookEventConsumer {
                 newMessage.setMessageType("text");
                 newMessage.setTimestamp(LocalDateTime.now());
                 messageRepository.save(newMessage);
+                LOGGER.info("Successfully saved message for messageId: {}", webhookResponse.getMessageId());
             }
             LOGGER.info("Successfully processed webhook for messageId: {}, status: {}",
                     webhookResponse.getMessageId(), webhookResponse.getStatus());

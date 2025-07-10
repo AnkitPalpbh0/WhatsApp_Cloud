@@ -27,9 +27,9 @@ public class WebhookEventProducer {
             // Encode file data to Base64
             String messageBody = objectMapper.writeValueAsString(webhookResponse);
             rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_NAME, RabbitMQConfig.ROUTING_KEY, messageBody);
-            LOGGER.info("Successfully sent bulk product data to RabbitMQ.");
+            LOGGER.info("Successfully sent data to RabbitMQ.");
         } catch (Exception e) {
-            LOGGER.error("Error occurred while sending bulk product data to RabbitMQ. Error: {}", e.getMessage());
+            LOGGER.error("Failed to send data to RabbitMQ.", e);
             LOGGER.debug("Stack trace: ", e);
         }
     }

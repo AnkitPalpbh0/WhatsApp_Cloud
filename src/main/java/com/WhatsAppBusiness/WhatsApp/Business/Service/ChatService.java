@@ -25,7 +25,7 @@ public interface ChatService {
 
     void deleteChat(Integer chatId, Integer id) throws ChatException;
 
-    List<ChatMessageResponse> getChatsMessages(Integer chatId, Users user);
+    List<ChatMessageResponse> getChatsMessages(Integer chatId, Users user) throws ChatException, UserException;
 
     List<UserChatsResponse> getUserChats(Users user);
 }

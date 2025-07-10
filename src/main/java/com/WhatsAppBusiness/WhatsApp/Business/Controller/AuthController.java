@@ -47,7 +47,7 @@ public class AuthController {
 
         Users isUser = this.userRepository.findByEmail(email);
         if (isUser != null) {
-            throw new UserException("Email is userd with another account");
+            throw new UserException("User already exists");
         }
         Users createdUser = new Users();
         createdUser.setEmail(email);

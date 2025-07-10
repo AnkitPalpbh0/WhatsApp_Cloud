@@ -17,7 +17,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @EnableRabbit
 public class RabbitMQConfig implements RabbitListenerConfigurer {
-    // CAD Queue Config
+    // WhatsApp Queue Config
     public static final String QUEUE_NAME = "webhookEventQueue";
     public static final String EXCHANGE_NAME = "webhookEventExchange";
     public static final String ROUTING_KEY = "webhook.process";

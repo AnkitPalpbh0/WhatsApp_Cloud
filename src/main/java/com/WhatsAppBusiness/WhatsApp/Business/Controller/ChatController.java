@@ -3,7 +3,6 @@ package com.WhatsAppBusiness.WhatsApp.Business.Controller;
 import com.WhatsAppBusiness.WhatsApp.Business.Common.Exceptions.ChatException;
 import com.WhatsAppBusiness.WhatsApp.Business.Common.Exceptions.UserException;
 import com.WhatsAppBusiness.WhatsApp.Business.DTOs.*;
-import com.WhatsAppBusiness.WhatsApp.Business.Model.Chat;
 import com.WhatsAppBusiness.WhatsApp.Business.Model.Users;
 import com.WhatsAppBusiness.WhatsApp.Business.Service.ChatService;
 import com.WhatsAppBusiness.WhatsApp.Business.Service.UserService;
@@ -30,12 +29,16 @@ public class ChatController {
 
         Users user = this.userService.findUserProfile(jwt);
 
+        if(chatId == null){
+            throw new ChatException("Chat id is required.");
+        }
+
         List<ChatMessageResponse> messages = this.chatService.getChatsMessages(chatId, user);
 
         return new ResponseEntity<>(messages, HttpStatus.OK);
     }
 
-    @GetMapping("/chats/{userId}")
+    @GetMapping("/{userId}")
     public ResponseEntity<List<UserChatsResponse>> getUserChatsHandler(@PathVariable Integer userId,
                                                                        @RequestHeader("Authorization") String jwt) throws UserException, ChatException {
 

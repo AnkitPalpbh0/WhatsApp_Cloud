@@ -1,9 +1,13 @@
 package com.WhatsAppBusiness.WhatsApp.Business.DTOs;
 
+import com.google.firebase.database.annotations.NotNull;
+
 public class SendMessageRequest {
+    @NotNull
     private String to;      // recipient number with country code
     private Integer userId;
     private Integer chatId;
+    @NotNull
     private String content;
 
     public Integer getUserId() {

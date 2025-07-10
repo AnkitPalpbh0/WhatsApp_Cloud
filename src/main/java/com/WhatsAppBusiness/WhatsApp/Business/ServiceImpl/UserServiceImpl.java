@@ -2,6 +2,7 @@ package com.WhatsAppBusiness.WhatsApp.Business.ServiceImpl;
 
 import com.WhatsAppBusiness.WhatsApp.Business.Common.Exceptions.UserException;
 import com.WhatsAppBusiness.WhatsApp.Business.DTOs.UpdateUserRequest;
+import com.WhatsAppBusiness.WhatsApp.Business.DTOs.UserDTO;
 import com.WhatsAppBusiness.WhatsApp.Business.Model.Users;
 import com.WhatsAppBusiness.WhatsApp.Business.Repository.UserRepository;
 import com.WhatsAppBusiness.WhatsApp.Business.Security.config.TokenProvider;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service

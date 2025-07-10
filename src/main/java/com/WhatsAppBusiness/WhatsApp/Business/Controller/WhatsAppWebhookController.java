@@ -69,6 +69,7 @@ public class WhatsAppWebhookController {
                             response.setSenderNumber(message.from().substring(message.from().length() - 10));
                             if (message.type() == MessageType.TEXT && message.text() != null) {
                                 String content = message.text().body();
+                                logger.info("Message Received from number: {} content: {} with message id: {}", message.from(), content, message.id());
                                 response.setContent(content);
                             }
 

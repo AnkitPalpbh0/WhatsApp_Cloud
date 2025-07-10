@@ -3,10 +3,7 @@ package com.WhatsAppBusiness.WhatsApp.Business.Controller;
 import com.WhatsAppBusiness.WhatsApp.Business.Common.Exceptions.ChatException;
 import com.WhatsAppBusiness.WhatsApp.Business.Common.Exceptions.MessageException;
 import com.WhatsAppBusiness.WhatsApp.Business.Common.Exceptions.UserException;
-import com.WhatsAppBusiness.WhatsApp.Business.DTOs.ApiResponse;
-import com.WhatsAppBusiness.WhatsApp.Business.DTOs.ChatMessageResponse;
-import com.WhatsAppBusiness.WhatsApp.Business.DTOs.SendMessageRequest;
-import com.WhatsAppBusiness.WhatsApp.Business.DTOs.UserChatsResponse;
+import com.WhatsAppBusiness.WhatsApp.Business.DTOs.*;
 import com.WhatsAppBusiness.WhatsApp.Business.Model.Message;
 import com.WhatsAppBusiness.WhatsApp.Business.Model.Users;
 import com.WhatsAppBusiness.WhatsApp.Business.Service.MessageService;
@@ -34,8 +31,8 @@ public class MessageController {
 
 
     @PostMapping("/sendTextMessage")
-    public ResponseEntity<?> sendMessageHandler(@RequestBody SendMessageRequest sendMessageRequest,
-                                                @RequestHeader("Authorization") String jwt) throws UserException, ChatException {
+    public ResponseEntity<MessageResponse> sendMessageHandler(@RequestBody SendMessageRequest sendMessageRequest,
+                                                              @RequestHeader("Authorization") String jwt) throws UserException, ChatException {
 
         Users user = this.userService.findUserProfile(jwt);
 
@@ -43,10 +40,11 @@ public class MessageController {
 
         Message message = this.messageService.sendMessage(sendMessageRequest, user);
         if (message != null) {
-            return new ResponseEntity<>("Message sent", HttpStatus.CREATED);
+            MessageResponse messageResponse = new MessageResponse();
+            messageResponse.setStatus("Message sent");
+            return new ResponseEntity<>(messageResponse, HttpStatus.OK);
         }
-
-        return new ResponseEntity<>(message, HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
     @DeleteMapping("/{messageId}")

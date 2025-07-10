@@ -96,8 +96,11 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public List<ChatMessageResponse> getChatsMessages(Integer chatId, Users user) {
+    public List<ChatMessageResponse> getChatsMessages(Integer chatId, Users user) throws ChatException {
         Chat chat = this.chatRepository.findChatById(chatId);
+        if (chat == null) {
+            throw new ChatException("The expected chat is not found");
+        }
 
         List<Message> messages = this.messageRepository.findByChatId(chat.getId());
         return messages.stream().map(message -> new ChatMessageResponse(
