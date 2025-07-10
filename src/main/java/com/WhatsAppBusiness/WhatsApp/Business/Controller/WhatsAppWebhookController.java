@@ -65,7 +65,7 @@ public class WhatsAppWebhookController {
                             WebhookResponse response = new WebhookResponse();
                             response.setMessageId(message.id());
                             response.setStatus("received");
-                            response.setSenderNumber(message.from());
+                            response.setSenderNumber(message.from().substring(message.from().length() - 10));
                             if ("text".equals(message.type()) && message.text() != null) {
                                 String content = message.text().body();
                                 response.setContent(content);  // <- you must add a 'content' field in your WebhookResponse
