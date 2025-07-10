@@ -2,6 +2,7 @@ package com.WhatsAppBusiness.WhatsApp.Business.Controller;
 
 import com.WhatsAppBusiness.WhatsApp.Business.DTOs.WebhookResponse;
 import com.WhatsAppBusiness.WhatsApp.Business.Manager.rabbitmq.whatsappWebhookPubSub.WebhookEventProducer;
+import com.whatsapp.api.domain.messages.type.MessageType;
 import com.whatsapp.api.domain.webhook.WebHook;
 import com.whatsapp.api.domain.webhook.WebHookEvent;
 import org.slf4j.Logger;
@@ -66,9 +67,9 @@ public class WhatsAppWebhookController {
                             response.setMessageId(message.id());
                             response.setStatus("received");
                             response.setSenderNumber(message.from().substring(message.from().length() - 10));
-                            if ("text".equals(message.type()) && message.text() != null) {
+                            if (message.type() == MessageType.TEXT && message.text() != null) {
                                 String content = message.text().body();
-                                response.setContent(content);  // <- you must add a 'content' field in your WebhookResponse
+                                response.setContent(content);
                             }
 
                             response.setRecipientBusinessNumber(businessNumber);
