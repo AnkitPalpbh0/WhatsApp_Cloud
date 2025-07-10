@@ -23,7 +23,7 @@ public class ChatController {
     @Autowired
     private UserService userService;
 
-    @GetMapping("/{chatId}")
+    @GetMapping("/messages/{chatId}")
     public ResponseEntity<List<ChatMessageResponse>> getChatMessageHandler(@PathVariable Integer chatId,
                                                                            @RequestHeader("Authorization") String jwt) throws UserException, ChatException {
 
