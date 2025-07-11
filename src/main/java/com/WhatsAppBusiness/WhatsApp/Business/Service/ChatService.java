@@ -28,4 +28,6 @@ public interface ChatService {
     List<ChatMessageResponse> getChatsMessages(Integer chatId, Users user) throws ChatException, UserException;
 
     List<UserChatsResponse> getUserChats(Users user);
+
+    Chat findByChatNumberAndUserId(String to, Integer id);
 }

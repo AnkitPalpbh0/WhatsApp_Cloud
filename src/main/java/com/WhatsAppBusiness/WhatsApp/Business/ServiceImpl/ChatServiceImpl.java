@@ -122,4 +122,8 @@ public class ChatServiceImpl implements ChatService {
                 chat.getChatNumber()
         )).collect(Collectors.toList());
     }
+
+    public Chat findByChatNumberAndUserId(String to, Integer id) {
+        return this.chatRepository.findByChatNumberAndUserId(to, id);
+    }
 }

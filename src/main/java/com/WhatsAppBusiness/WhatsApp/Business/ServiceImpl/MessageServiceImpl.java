@@ -51,7 +51,7 @@ public class MessageServiceImpl implements MessageService {
     @Override
     public Message sendMessage(SendMessageRequest req, Users user) throws UserException, ChatException {
 
-        Chat chat = this.chatService.findByChatNumber(req.getTo());
+        Chat chat = this.chatService.findByChatNumberAndUserId(req.getTo(), user.getId());
         if (chat == null) {
             chat = new Chat();
             chat.setChatNumber(req.getTo());
