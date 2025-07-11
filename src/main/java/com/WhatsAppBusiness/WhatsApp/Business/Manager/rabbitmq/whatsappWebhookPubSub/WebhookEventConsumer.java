@@ -53,11 +53,8 @@ public class WebhookEventConsumer {
                 message.setStatus(webhookResponse.getStatus());
                 messageRepository.save(message);
             } else {
-                Users user = userRepository.findByPhone(webhookResponse.getRecipientBusinessNumber());
-                if (user == null) {
-                    return;
-                }
-                Chat chat = chatRepository.findByChatNumberAndUserId(webhookResponse.getSenderNumber(), user.getId());
+
+                Chat chat = chatRepository.findByChatNumberEndingWith(webhookResponse.getSenderNumber());
                 LOGGER.info("Chat: {}", chat);
                 if (chat == null) {
                     return;
