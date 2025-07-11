@@ -10,10 +10,6 @@ commands:
   install_dependencies_dev:
     steps:
       - run: apk add openssh sshpass --no-cache
-
-  install_dependencies_qa:
-    steps:
-      - run: apk add openssh sshpass --no-cache    
   
   ssh_instance_dev:
     steps:

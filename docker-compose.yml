@@ -34,7 +34,7 @@ services:
   app:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: Env/Backend/Dockerfile
     container_name: whatsapp-app
     ports:
       - "8080:8080"

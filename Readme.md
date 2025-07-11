@@ -49,9 +49,5 @@ RABBITMQ_PASSWORD=guest
 ## 🚀 Running the Application
 
 ```bash
-  ./gradlew clean build -x test
-```
-
-```bash
   docker-compose up --build
 ```
