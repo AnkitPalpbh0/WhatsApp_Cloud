@@ -17,4 +17,7 @@ public interface UserRepository extends JpaRepository<Users, Integer> {
     public List<Users> searchUser(@Param("query") String query);
 
     Users findUserById(Integer userId);
+
+    @Query(value = "SELECT * FROM users WHERE RIGHT(phone, 10) = :lastTen", nativeQuery = true)
+    Users findByPhone(@Param("lastTen") String recipientBusinessNumber);
 }

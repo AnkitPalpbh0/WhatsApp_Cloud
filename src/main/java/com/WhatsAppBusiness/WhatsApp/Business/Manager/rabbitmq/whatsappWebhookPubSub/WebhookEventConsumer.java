@@ -4,8 +4,10 @@ import com.WhatsAppBusiness.WhatsApp.Business.DTOs.WebhookResponse;
 import com.WhatsAppBusiness.WhatsApp.Business.Manager.rabbitmq.RabbitMQConfig;
 import com.WhatsAppBusiness.WhatsApp.Business.Model.Chat;
 import com.WhatsAppBusiness.WhatsApp.Business.Model.Message;
+import com.WhatsAppBusiness.WhatsApp.Business.Model.Users;
 import com.WhatsAppBusiness.WhatsApp.Business.Repository.ChatRepository;
 import com.WhatsAppBusiness.WhatsApp.Business.Repository.MessageRepository;
+import com.WhatsAppBusiness.WhatsApp.Business.Repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.checkerframework.checker.units.qual.A;
 import org.checkerframework.checker.units.qual.N;
@@ -30,6 +32,9 @@ public class WebhookEventConsumer {
     @Autowired
     private ChatRepository chatRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
     public WebhookEventConsumer(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
     }
@@ -48,7 +53,11 @@ public class WebhookEventConsumer {
                 message.setStatus(webhookResponse.getStatus());
                 messageRepository.save(message);
             } else {
-                Chat chat = chatRepository.findByChatNumberEndingWith(webhookResponse.getSenderNumber());
+                Users user = userRepository.findByPhone(webhookResponse.getRecipientBusinessNumber());
+                if (user == null) {
+                    return;
+                }
+                Chat chat = chatRepository.findByChatNumberAndUserId(webhookResponse.getSenderNumber(), user.getId());
                 LOGGER.info("Chat: {}", chat);
                 if (chat == null) {
                     return;

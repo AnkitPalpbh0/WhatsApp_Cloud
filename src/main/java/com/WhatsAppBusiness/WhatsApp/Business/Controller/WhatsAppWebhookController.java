@@ -73,7 +73,7 @@ public class WhatsAppWebhookController {
                                 response.setContent(content);
                             }
 
-                            response.setRecipientBusinessNumber(businessNumber);
+                            response.setRecipientBusinessNumber(businessNumber.substring(businessNumber.length() - 10));
                             webhookEventProducer.sendMessage(response);
                         });
                     }
