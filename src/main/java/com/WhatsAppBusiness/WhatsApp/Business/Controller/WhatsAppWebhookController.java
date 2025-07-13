@@ -42,6 +42,9 @@ public class WhatsAppWebhookController {
     @PostMapping
     public ResponseEntity<Void> receiveWebhook(@RequestBody String payload) {
         try {
+            // ✅ Log the full JSON payload
+            logger.info("Received Webhook JSON Payload:\n{}", payload);
+
             WebHookEvent event = WebHook.constructEvent(payload);
 
             for (var entry : event.entry()) {
