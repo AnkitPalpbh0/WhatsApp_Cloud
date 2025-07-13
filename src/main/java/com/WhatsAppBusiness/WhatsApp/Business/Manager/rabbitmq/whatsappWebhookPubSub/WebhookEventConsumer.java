@@ -56,7 +56,7 @@ public class WebhookEventConsumer {
                 LOGGER.info("Saving new message for messageId: {}", webhookResponse.getMessageId());
                 Users user = userRepository.findByPhone(webhookResponse.getRecipientBusinessNumber());
                 if (user != null) {
-                    Chat chat = chatRepository.findByChatNumberAndUserId(webhookResponse.getSenderNumber(), user.getId());
+                    Chat chat = chatRepository.findByChatNumberEndingWithAndUserId(webhookResponse.getSenderNumber(), user.getId());
                     if (chat == null) {
                         LOGGER.info("Creating new chat for messageId: {}", webhookResponse.getMessageId());
                         Chat newChat = new Chat();
