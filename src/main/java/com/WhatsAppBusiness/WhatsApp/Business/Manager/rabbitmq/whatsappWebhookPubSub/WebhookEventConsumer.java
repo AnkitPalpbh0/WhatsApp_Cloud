@@ -53,21 +53,32 @@ public class WebhookEventConsumer {
                 message.setStatus(webhookResponse.getStatus());
                 messageRepository.save(message);
             } else {
-
-                Chat chat = chatRepository.findByChatNumberEndingWith(webhookResponse.getSenderNumber());
-                LOGGER.info("Chat: {}", chat);
-                if (chat == null) {
+                LOGGER.info("Saving new message for messageId: {}", webhookResponse.getMessageId());
+                Users user = userRepository.findByPhone(webhookResponse.getRecipientBusinessNumber());
+                if (user != null) {
+                    Chat chat = chatRepository.findByChatNumberAndUserId(webhookResponse.getSenderNumber(), user.getId());
+                    if (chat == null) {
+                        LOGGER.info("Creating new chat for messageId: {}", webhookResponse.getMessageId());
+                        Chat newChat = new Chat();
+                        newChat.setChatNumber(webhookResponse.getSenderNumber());
+                        newChat.setUser(user);
+                        chatRepository.save(newChat);
+                    } else {
+                        LOGGER.info("Chat already exists for messageId: {}", webhookResponse.getMessageId());
+                    }
+                    Message newMessage = new Message();
+                    newMessage.setChat(chat);
+                    newMessage.setContent(webhookResponse.getContent());
+                    newMessage.setMessageId(webhookResponse.getMessageId());
+                    newMessage.setStatus(webhookResponse.getStatus());
+                    newMessage.setMessageType(webhookResponse.getType());
+                    newMessage.setTimestamp(LocalDateTime.now());
+                    messageRepository.save(newMessage);
+                    LOGGER.info("Successfully saved new message for messageId: {}", webhookResponse.getMessageId());
                     return;
+                } else {
+                    LOGGER.error("User not found for messageId: {}", webhookResponse.getMessageId());
                 }
-                Message newMessage = new Message();
-                newMessage.setChat(chat);
-                newMessage.setContent(webhookResponse.getContent());
-                newMessage.setMessageId(webhookResponse.getMessageId());
-                newMessage.setStatus(webhookResponse.getStatus());
-                newMessage.setMessageType("text");
-                newMessage.setTimestamp(LocalDateTime.now());
-                messageRepository.save(newMessage);
-                LOGGER.info("Successfully saved message for messageId: {}", webhookResponse.getMessageId());
             }
             LOGGER.info("Successfully processed webhook for messageId: {}, status: {}",
                     webhookResponse.getMessageId(), webhookResponse.getStatus());

@@ -72,6 +72,8 @@ public class WhatsAppWebhookController {
                             response.setSenderNumber(message.from().substring(message.from().length() - 10));
                             if (message.type() == MessageType.TEXT && message.text() != null) {
                                 String content = message.text().body();
+                                response.setType(message.type().name());
+                                logger.info(message.type().name());
                                 logger.info("Message Received from number: {} content: {} with message id: {}", message.from(), content, message.id());
                                 response.setContent(content);
                             }
@@ -84,7 +86,7 @@ public class WhatsAppWebhookController {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Error processing webhook", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
 

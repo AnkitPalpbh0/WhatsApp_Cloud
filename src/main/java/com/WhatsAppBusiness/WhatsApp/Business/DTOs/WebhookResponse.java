@@ -6,6 +6,15 @@ public class WebhookResponse {
     private String senderNumber;
     private String recipientBusinessNumber;
     private String content;
+    private String type;
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
 
     public String getContent() {
         return content;
