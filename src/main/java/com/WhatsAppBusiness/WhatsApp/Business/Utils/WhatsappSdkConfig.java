@@ -19,4 +19,8 @@ public class WhatsappSdkConfig {
         return factory.newBusinessCloudApi(ApiVersion.V19_0);
     }
 
+    public String getToken() {
+        return token;
+    }
+
 }

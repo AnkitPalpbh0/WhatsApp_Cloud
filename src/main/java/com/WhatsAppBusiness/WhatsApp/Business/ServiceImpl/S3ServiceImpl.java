@@ -7,14 +7,17 @@ import org.springframework.stereotype.Service;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.core.ResponseInputStream;
+import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.GetObjectResponse;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.UUID;
 
 @Service
 public class S3ServiceImpl implements S3Service {
@@ -77,6 +80,54 @@ public class S3ServiceImpl implements S3Service {
         } catch (Exception e) {
             LOGGER.error("Unexpected error occurred: {}", e.getMessage(), e);
             throw new RuntimeException("Unexpected error occurred while downloading file", e);
+        }
+    }
+
+    @Override
+    public String uploadToS3(byte[] mediaBytes, String fileName, String mimeType) {
+        LOGGER.info("Uploading media to S3");
+        LOGGER.info("File name: {}", fileName);
+        LOGGER.info("MIME type: {}", mimeType);
+        LOGGER.info("File size: {}", mediaBytes.length);
+        try {
+            // Fallback if extension is missing
+            String extension = switch (mimeType) {
+                case "image/jpeg" -> ".jpg";
+                case "image/png" -> ".png";
+                case "image/gif" -> ".gif";
+                case "video/mp4" -> ".mp4";
+                case "application/pdf" -> ".pdf";
+                case "application/msword" -> ".doc";
+                case "application/vnd.openxmlformats-officedocument.wordprocessingml.document" -> ".docx";
+                case "application/vnd.ms-excel" -> ".xls";
+                case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" -> ".xlsx";
+                default -> ".bin";
+            };
+
+            // Generate timestamped name if original is missing
+            if (fileName == null || fileName.isBlank()) {
+                String timestamp = new java.text.SimpleDateFormat("yyyyMMdd_HHmmss").format(new java.util.Date());
+                fileName = "media_" + timestamp + "_" + UUID.randomUUID() + extension;
+            }
+
+            // Final S3 key
+            String s3Key = "bulkUpload/" + fileName;
+
+            // Upload
+            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                    .bucket(S3_BUCKET_NAME)
+                    .key(s3Key)
+                    .contentType(mimeType)
+                    .build();
+
+            s3Client.putObject(putObjectRequest, RequestBody.fromBytes(mediaBytes));
+
+            LOGGER.info("Successfully uploaded file to S3: {}", s3Key);
+            return s3Key;
+
+        } catch (Exception e) {
+            LOGGER.error("Error uploading file to S3", e);
+            throw new RuntimeException("Failed to upload file to S3", e);
         }
     }
 

@@ -7,6 +7,26 @@ public class WebhookResponse {
     private String recipientBusinessNumber;
     private String content;
     private String type;
+    private String mediaId;
+    private String caption;
+    private String mimeType;
+    private String fileName;
+
+    public String getMediaId() {
+        return mediaId;
+    }
+
+    public String getCaption() {
+        return caption;
+    }
+
+    public String getMimeType() {
+        return mimeType;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
 
     public String getType() {
         return type;
@@ -54,5 +74,17 @@ public class WebhookResponse {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public void setMediaId(String id) {
+    }
+
+    public void setCaption(String caption) {
+    }
+
+    public void setMimeType(String s) {
+    }
+
+    public void setFileName(String filename) {
     }
 }

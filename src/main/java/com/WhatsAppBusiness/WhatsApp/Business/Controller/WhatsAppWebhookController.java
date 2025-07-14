@@ -70,15 +70,46 @@ public class WhatsAppWebhookController {
                             response.setMessageId(message.id());
                             response.setStatus("received");
                             response.setSenderNumber(message.from().substring(message.from().length() - 10));
-                            if (message.type() == MessageType.TEXT && message.text() != null) {
-                                String content = message.text().body();
-                                response.setType(message.type().name());
-                                logger.info(message.type().name());
-                                logger.info("Message Received from number: {} content: {} with message id: {}", message.from(), content, message.id());
-                                response.setContent(content);
+                            response.setRecipientBusinessNumber(businessNumber.substring(businessNumber.length() - 10));
+
+                            // Media handling
+                            switch (message.type()) {
+                                case IMAGE:
+                                    logger.info("Received image message");
+                                    response.setType("image");
+                                    response.setMediaId(message.image().id());
+                                    response.setCaption(message.image().caption());
+                                    response.setMimeType(message.image().mimeType());
+                                    break;
+
+                                case VIDEO:
+                                    logger.info("Received video message");
+                                    response.setType("video");
+                                    response.setMediaId(message.video().id());
+                                    response.setCaption(message.video().caption());
+                                    response.setMimeType(message.video().mimeType());
+                                    break;
+
+                                case DOCUMENT:
+                                    logger.info("Received document message");
+                                    response.setType("document");
+                                    response.setMediaId(message.document().id());
+                                    response.setCaption(message.document().caption());
+                                    response.setMimeType(message.document().mimeType());
+                                    response.setFileName(message.document().filename());
+                                    break;
+
+                                case TEXT:
+                                    logger.info("Received text message");
+                                    response.setType("text");
+                                    response.setContent(message.text().body());
+                                    break;
+
+                                default:
+                                    logger.warn("Unsupported message type received: {}", message.type().name());
                             }
 
-                            response.setRecipientBusinessNumber(businessNumber.substring(businessNumber.length() - 10));
+                            // Send to RabbitMQ queue
                             webhookEventProducer.sendMessage(response);
                         });
                     }
