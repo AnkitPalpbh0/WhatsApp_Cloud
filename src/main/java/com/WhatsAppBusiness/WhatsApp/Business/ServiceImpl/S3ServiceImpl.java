@@ -90,7 +90,7 @@ public class S3ServiceImpl implements S3Service {
         LOGGER.info("MIME type: {}", mimeType);
         LOGGER.info("File size: {}", mediaBytes.length);
         try {
-            // Fallback if extension is missing
+            // Determine file extension from MIME type
             String extension = switch (mimeType) {
                 case "image/jpeg" -> ".jpg";
                 case "image/png" -> ".png";
@@ -104,16 +104,28 @@ public class S3ServiceImpl implements S3Service {
                 default -> ".bin";
             };
 
-            // Generate timestamped name if original is missing
+            // Generate timestamp
+            String timestamp = new java.text.SimpleDateFormat("yyyyMMdd_HHmmss").format(new java.util.Date());
+
+            // Use default name if fileName is null/blank
             if (fileName == null || fileName.isBlank()) {
-                String timestamp = new java.text.SimpleDateFormat("yyyyMMdd_HHmmss").format(new java.util.Date());
-                fileName = "media_" + timestamp + "_" + UUID.randomUUID() + extension;
+                fileName = "media";
             }
 
-            // Final S3 key
-            String s3Key = "bulkUpload/" + fileName;
+            // Remove extension if present in fileName
+            if (fileName.contains(".")) {
+                fileName = fileName.substring(0, fileName.lastIndexOf('.'));
+            }
 
-            // Upload
+            // Sanitize file name to remove unsafe characters
+            String sanitizedFileName = fileName.replaceAll("[^a-zA-Z0-9_\\- ]", "_");
+
+            // Final file name: original name + timestamp + extension
+            String finalFileName = sanitizedFileName + "_" + timestamp + extension;
+
+            // S3 key path
+            String s3Key = "bulkUpload/" + finalFileName;
+
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                     .bucket(S3_BUCKET_NAME)
                     .key(s3Key)
@@ -123,6 +135,8 @@ public class S3ServiceImpl implements S3Service {
             s3Client.putObject(putObjectRequest, RequestBody.fromBytes(mediaBytes));
 
             LOGGER.info("Successfully uploaded file to S3: {}", s3Key);
+
+            // Return the full S3 path (or just the key if preferred)
             return s3Key;
 
         } catch (Exception e) {

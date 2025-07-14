@@ -2,7 +2,6 @@ package com.WhatsAppBusiness.WhatsApp.Business.Controller;
 
 import com.WhatsAppBusiness.WhatsApp.Business.DTOs.WebhookResponse;
 import com.WhatsAppBusiness.WhatsApp.Business.Manager.rabbitmq.whatsappWebhookPubSub.WebhookEventProducer;
-import com.whatsapp.api.domain.messages.type.MessageType;
 import com.whatsapp.api.domain.webhook.WebHook;
 import com.whatsapp.api.domain.webhook.WebHookEvent;
 import org.slf4j.Logger;
@@ -11,6 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 @RestController
 @RequestMapping("/webhook")
@@ -82,6 +84,15 @@ public class WhatsAppWebhookController {
                                         response.setCaption(message.image().caption());
                                     }
                                     response.setMimeType(message.image().mimeType());
+                                    String ext = switch (message.image().mimeType()) {
+                                        case "image/jpeg" -> ".jpeg";
+                                        case "image/png" -> ".png";
+                                        case "image/gif" -> ".gif";
+                                        default -> ".bin";
+                                    };
+
+                                    String timestamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+                                    response.setFileName("image_" + timestamp + ext);
                                     break;
 
                                 case VIDEO:
@@ -92,6 +103,7 @@ public class WhatsAppWebhookController {
                                         response.setCaption(message.video().caption());
                                     }
                                     response.setMimeType(message.video().mimeType());
+                                    response.setFileName("Video_" + message.video().id() + ".mp4"); // or extract from metadata if available
                                     break;
 
                                 case DOCUMENT:
@@ -102,6 +114,7 @@ public class WhatsAppWebhookController {
                                         response.setCaption(message.document().caption());
                                     }
                                     response.setMimeType(message.document().mimeType());
+                                    response.setFileName(message.document().filename());
                                     response.setFileName(message.document().filename());
                                     break;
 
