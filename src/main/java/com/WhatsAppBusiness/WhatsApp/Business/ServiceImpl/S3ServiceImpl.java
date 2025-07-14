@@ -2,6 +2,7 @@ package com.WhatsAppBusiness.WhatsApp.Business.ServiceImpl;
 
 import com.WhatsAppBusiness.WhatsApp.Business.Service.S3Service;
 import org.apache.commons.io.IOUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
@@ -27,6 +28,7 @@ public class S3ServiceImpl implements S3Service {
     static String S3_REGION = System.getenv().getOrDefault("S3_REGION", "");
     static String S3_BUCKET_NAME = System.getenv().getOrDefault("S3_BUCKET_NAME", "");
 
+    @Autowired
     public S3ServiceImpl() {
         // Initialize the S3 client with credentials and region
         AwsBasicCredentials awsCreds = AwsBasicCredentials.create(S3_AWS_ACCESS_KEY, S3_AWS_SECRET_KEY);
