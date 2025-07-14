@@ -88,8 +88,8 @@ public class WhatsAppWebhookController {
                                     logger.info("Received video message");
                                     response.setType("video");
                                     response.setMediaId(message.video().id());
-                                    if (message.image().caption() != null) {
-                                        response.setCaption(message.image().caption());
+                                    if (message.video().caption() != null) {
+                                        response.setCaption(message.video().caption());
                                     }
                                     response.setMimeType(message.video().mimeType());
                                     break;
@@ -98,8 +98,8 @@ public class WhatsAppWebhookController {
                                     logger.info("Received document message");
                                     response.setType("document");
                                     response.setMediaId(message.document().id());
-                                    if (message.image().caption() != null) {
-                                        response.setCaption(message.image().caption());
+                                    if (message.document().caption() != null) {
+                                        response.setCaption(message.document().caption());
                                     }
                                     response.setMimeType(message.document().mimeType());
                                     response.setFileName(message.document().filename());
