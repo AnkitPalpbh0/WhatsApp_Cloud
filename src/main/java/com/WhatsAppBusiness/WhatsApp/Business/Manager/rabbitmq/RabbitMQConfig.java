@@ -60,4 +60,25 @@ public class RabbitMQConfig implements RabbitListenerConfigurer {
     public void configureRabbitListeners(RabbitListenerEndpointRegistrar rabbitListenerEndpointRegistrar) {
     }
 
+    // ✅ Media Processing Queue
+    public static final String MEDIA_QUEUE_NAME = "mediaProcessingQueue";
+    public static final String MEDIA_EXCHANGE_NAME = "mediaProcessingExchange";
+    public static final String MEDIA_ROUTING_KEY = "media.process";
+
+    // ✅ Media Queue Bean
+    @Bean
+    public Queue mediaQueue() {
+        return new Queue(MEDIA_QUEUE_NAME, true);
+    }
+
+    @Bean
+    public TopicExchange mediaExchange() {
+        return new TopicExchange(MEDIA_EXCHANGE_NAME);
+    }
+
+    @Bean
+    public Binding mediaBinding(Queue mediaQueue, TopicExchange mediaExchange) {
+        return BindingBuilder.bind(mediaQueue).to(mediaExchange).with(MEDIA_ROUTING_KEY);
+    }
+
 }

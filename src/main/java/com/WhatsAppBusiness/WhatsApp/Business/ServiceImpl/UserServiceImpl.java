@@ -1,8 +1,9 @@
 package com.WhatsAppBusiness.WhatsApp.Business.ServiceImpl;
 
 import com.WhatsAppBusiness.WhatsApp.Business.Common.Exceptions.UserException;
+import com.WhatsAppBusiness.WhatsApp.Business.DTOs.MediaRequest;
 import com.WhatsAppBusiness.WhatsApp.Business.DTOs.UpdateUserRequest;
-import com.WhatsAppBusiness.WhatsApp.Business.DTOs.UserDTO;
+import com.WhatsAppBusiness.WhatsApp.Business.Manager.rabbitmq.whatsappmediapubsub.MediaEventProducer;
 import com.WhatsAppBusiness.WhatsApp.Business.Model.Users;
 import com.WhatsAppBusiness.WhatsApp.Business.Repository.UserRepository;
 import com.WhatsAppBusiness.WhatsApp.Business.Security.config.TokenProvider;
@@ -11,16 +12,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
+
     @Autowired
     private UserRepository userRepository;
 
     @Autowired
     private TokenProvider tokenProvider;
+
+    @Autowired
+    private MediaEventProducer mediaEventProducer;
 
     public Users findUserById(Integer id) throws UserException {
         return this.userRepository.findById(id).orElseThrow(() -> new UserException("The requested user is not found"));
@@ -58,5 +62,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<Users> searchUser(String query) {
         return this.userRepository.searchUser(query);
+    }
+
+    @Override
+    public void processMediaRequest(MediaRequest request) {
+        mediaEventProducer.sendMediaMessage(request);
     }
 }

@@ -1,13 +1,13 @@
 package com.WhatsAppBusiness.WhatsApp.Business.DTOs;
 
-import com.google.firebase.database.annotations.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 public class SendMessageRequest {
-    @NotNull
+    @NotNull(message = "recipient number is required")
     private String to;      // recipient number with country code
     private Integer userId;
     private Integer chatId;
-    @NotNull
+    @NotNull(message = "content is required")
     private String content;
 
     public Integer getUserId() {

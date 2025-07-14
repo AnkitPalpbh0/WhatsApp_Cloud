@@ -9,12 +9,11 @@ import com.WhatsAppBusiness.WhatsApp.Business.Model.Users;
 import com.WhatsAppBusiness.WhatsApp.Business.Service.MessageService;
 import com.WhatsAppBusiness.WhatsApp.Business.Service.UserService;
 import com.WhatsAppBusiness.WhatsApp.Business.Service.WhatsappService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/messages")
@@ -31,7 +30,7 @@ public class MessageController {
 
 
     @PostMapping("/sendTextMessage")
-    public ResponseEntity<MessageResponse> sendMessageHandler(@RequestBody SendMessageRequest sendMessageRequest,
+    public ResponseEntity<MessageResponse> sendMessageHandler(@Valid @RequestBody SendMessageRequest sendMessageRequest,
                                                               @RequestHeader("Authorization") String jwt) throws UserException, ChatException {
 
         Users user = this.userService.findUserProfile(jwt);
@@ -45,6 +44,18 @@ public class MessageController {
             return new ResponseEntity<>(messageResponse, HttpStatus.OK);
         }
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+    }
+
+    @PostMapping("/send-media")
+    public ResponseEntity<MediaResponse> sendMedia(@Valid @RequestBody MediaRequest request,
+                                                   @RequestHeader("Authorization") String jwt) throws UserException {
+
+        Users user = this.userService.findUserProfile(jwt);
+        request.setUserId(user.getId());
+        userService.processMediaRequest(request);
+        MediaResponse response = new MediaResponse();
+        response.setMessage("Media message sent successfully.");
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{messageId}")

@@ -1,6 +1,7 @@
 package com.WhatsAppBusiness.WhatsApp.Business.Service;
 
 import com.WhatsAppBusiness.WhatsApp.Business.Common.Exceptions.UserException;
+import com.WhatsAppBusiness.WhatsApp.Business.DTOs.MediaRequest;
 import com.WhatsAppBusiness.WhatsApp.Business.DTOs.UpdateUserRequest;
 import com.WhatsAppBusiness.WhatsApp.Business.Model.Users;
 
@@ -13,4 +14,6 @@ public interface UserService {
     List<Users> searchUser(String query);
 
     void updateUser(Integer id, UpdateUserRequest request) throws UserException;
+
+    void processMediaRequest(MediaRequest request);
 }
