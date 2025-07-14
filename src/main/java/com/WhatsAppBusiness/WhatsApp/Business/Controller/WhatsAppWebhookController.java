@@ -78,7 +78,9 @@ public class WhatsAppWebhookController {
                                     logger.info("Received image message");
                                     response.setType("image");
                                     response.setMediaId(message.image().id());
-                                    response.setCaption(message.image().caption());
+                                    if (message.image().caption() != null) {
+                                        response.setCaption(message.image().caption());
+                                    }
                                     response.setMimeType(message.image().mimeType());
                                     break;
 
@@ -86,7 +88,9 @@ public class WhatsAppWebhookController {
                                     logger.info("Received video message");
                                     response.setType("video");
                                     response.setMediaId(message.video().id());
-                                    response.setCaption(message.video().caption());
+                                    if (message.image().caption() != null) {
+                                        response.setCaption(message.image().caption());
+                                    }
                                     response.setMimeType(message.video().mimeType());
                                     break;
 
@@ -94,7 +98,9 @@ public class WhatsAppWebhookController {
                                     logger.info("Received document message");
                                     response.setType("document");
                                     response.setMediaId(message.document().id());
-                                    response.setCaption(message.document().caption());
+                                    if (message.image().caption() != null) {
+                                        response.setCaption(message.image().caption());
+                                    }
                                     response.setMimeType(message.document().mimeType());
                                     response.setFileName(message.document().filename());
                                     break;

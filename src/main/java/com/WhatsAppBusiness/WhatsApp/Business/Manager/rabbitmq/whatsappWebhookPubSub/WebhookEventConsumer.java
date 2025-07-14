@@ -62,7 +62,11 @@ public class WebhookEventConsumer {
             LOGGER.info("Received webhook message");
             webhookResponse = objectMapper.readValue(messageBody, WebhookResponse.class);
             LOGGER.info("Successfully deserialized webhook request: {}", webhookResponse);
-
+            LOGGER.info("WebhookResponse values: mediaId={}, mimeType={}, type={}, caption={}",
+                    webhookResponse.getMediaId(),
+                    webhookResponse.getMimeType(),
+                    webhookResponse.getType(),
+                    webhookResponse.getCaption());
             // Check if message already exists
             Message message = messageRepository.findByMessageId(webhookResponse.getMessageId());
             if (message != null) {
