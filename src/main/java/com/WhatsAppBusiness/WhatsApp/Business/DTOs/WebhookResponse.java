@@ -77,14 +77,18 @@ public class WebhookResponse {
     }
 
     public void setMediaId(String id) {
+        this.mediaId = id;
     }
 
     public void setCaption(String caption) {
+        this.caption = caption;
     }
 
     public void setMimeType(String s) {
+        this.mimeType = s;
     }
 
     public void setFileName(String filename) {
+        this.fileName = filename;
     }
 }
