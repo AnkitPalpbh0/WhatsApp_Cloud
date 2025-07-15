@@ -7,5 +7,5 @@ public interface S3Service {
 
     File downloadFile(String mediaUrl) throws IOException;
 
-    String uploadToS3(byte[] mediaBytes, String fileName, String mimeType) throws IOException;
+    String uploadFile(String bulkUpload, String fileName, byte[] mediaBytes, String mimeType);
 }

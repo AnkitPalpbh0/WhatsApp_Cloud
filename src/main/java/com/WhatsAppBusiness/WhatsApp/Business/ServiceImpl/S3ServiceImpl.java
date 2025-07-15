@@ -10,14 +10,10 @@ import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.GetObjectRequest;
-import software.amazon.awssdk.services.s3.model.GetObjectResponse;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
-import software.amazon.awssdk.services.s3.model.S3Exception;
+import software.amazon.awssdk.services.s3.model.*;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.util.UUID;
 
 @Service
 public class S3ServiceImpl implements S3Service {
@@ -83,65 +79,113 @@ public class S3ServiceImpl implements S3Service {
         }
     }
 
+//    @Override
+//    public String uploadToS3(byte[] mediaBytes, String fileName, String mimeType) {
+//        LOGGER.info("Uploading media to S3");
+//        LOGGER.info("File name: {}", fileName);
+//        LOGGER.info("MIME type: {}", mimeType);
+//        LOGGER.info("File size: {}", mediaBytes.length);
+//        try {
+//            // Determine file extension from MIME type
+//            String extension = switch (mimeType) {
+//                case "image/jpeg" -> ".jpg";
+//                case "image/png" -> ".png";
+//                case "image/gif" -> ".gif";
+//                case "video/mp4" -> ".mp4";
+//                case "application/pdf" -> ".pdf";
+//                case "application/msword" -> ".doc";
+//                case "application/vnd.openxmlformats-officedocument.wordprocessingml.document" -> ".docx";
+//                case "application/vnd.ms-excel" -> ".xls";
+//                case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" -> ".xlsx";
+//                default -> ".bin";
+//            };
+//
+//            // Generate timestamp
+//            String timestamp = new java.text.SimpleDateFormat("yyyyMMdd_HHmmss").format(new java.util.Date());
+//
+//            // Use default name if fileName is null/blank
+//            if (fileName == null || fileName.isBlank()) {
+//                fileName = "media";
+//            }
+//
+//            // Remove extension if present in fileName
+//            if (fileName.contains(".")) {
+//                fileName = fileName.substring(0, fileName.lastIndexOf('.'));
+//            }
+//
+//            // Sanitize file name to remove unsafe characters
+//            String sanitizedFileName = fileName.replaceAll("[^a-zA-Z0-9_\\- ]", "_");
+//
+//            // Final file name: original name + timestamp + extension
+//            String finalFileName = sanitizedFileName + "_" + timestamp + extension;
+//
+//            // S3 key path
+//            String s3Key = "bulkUpload/" + finalFileName;
+//
+//            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+//                    .bucket(S3_BUCKET_NAME)
+//                    .key(s3Key)
+//                    .contentType(mimeType)
+//                    .contentLength((long) mediaBytes.length)
+//                    .build();
+//
+//            s3Client.putObject(putObjectRequest, RequestBody.fromBytes(mediaBytes));
+//
+//            LOGGER.info("Successfully uploaded file to S3: {}", s3Key);
+//
+//            // Return the full S3 path (or just the key if preferred)
+//            return s3Key;
+//
+//        } catch (Exception e) {
+//            LOGGER.error("Error uploading file to S3", e);
+//            throw new RuntimeException("Failed to upload file to S3", e);
+//        }
+//    }
     @Override
-    public String uploadToS3(byte[] mediaBytes, String fileName, String mimeType) {
-        LOGGER.info("Uploading media to S3");
-        LOGGER.info("File name: {}", fileName);
-        LOGGER.info("MIME type: {}", mimeType);
-        LOGGER.info("File size: {}", mediaBytes.length);
+    public String uploadFile(String folderName, String fileName, byte[] fileContent, String contentType) {
         try {
-            // Determine file extension from MIME type
-            String extension = switch (mimeType) {
-                case "image/jpeg" -> ".jpg";
-                case "image/png" -> ".png";
-                case "image/gif" -> ".gif";
-                case "video/mp4" -> ".mp4";
-                case "application/pdf" -> ".pdf";
-                case "application/msword" -> ".doc";
-                case "application/vnd.openxmlformats-officedocument.wordprocessingml.document" -> ".docx";
-                case "application/vnd.ms-excel" -> ".xls";
-                case "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" -> ".xlsx";
-                default -> ".bin";
-            };
-
-            // Generate timestamp
-            String timestamp = new java.text.SimpleDateFormat("yyyyMMdd_HHmmss").format(new java.util.Date());
-
-            // Use default name if fileName is null/blank
+            if (folderName == null || folderName.isBlank()) {
+                throw new IllegalArgumentException("Folder name cannot be null or blank");
+            }
             if (fileName == null || fileName.isBlank()) {
-                fileName = "media";
+                throw new IllegalArgumentException("File name cannot be null or blank");
+            }
+            if (fileContent == null || fileContent.length == 0) {
+                throw new IllegalArgumentException("File content cannot be null or empty");
+            }
+            if (contentType == null || contentType.isBlank()) {
+                throw new IllegalArgumentException("Content type cannot be null or blank");
             }
 
-            // Remove extension if present in fileName
-            if (fileName.contains(".")) {
-                fileName = fileName.substring(0, fileName.lastIndexOf('.'));
-            }
+            // ✅ Build the S3 Key (generic folder structure)
+            String key = folderName + "/" + fileName;
 
-            // Sanitize file name to remove unsafe characters
-            String sanitizedFileName = fileName.replaceAll("[^a-zA-Z0-9_\\- ]", "_");
+            // ✅ Log the upload details
+            LOGGER.info("Uploading byte array to S3 bucket: {}, folder: {}, file: {}", S3_BUCKET_NAME, folderName, fileName);
 
-            // Final file name: original name + timestamp + extension
-            String finalFileName = sanitizedFileName + "_" + timestamp + extension;
-
-            // S3 key path
-            String s3Key = "bulkUpload/" + finalFileName;
-
+            // ✅ Build PutObjectRequest
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                     .bucket(S3_BUCKET_NAME)
-                    .key(s3Key)
-                    .contentType(mimeType)
+                    .key(key)
+                    .contentType(contentType)
+                    .contentLength((long) fileContent.length)
                     .build();
 
-            s3Client.putObject(putObjectRequest, RequestBody.fromBytes(mediaBytes));
+            // ✅ Upload File to S3
+            s3Client.putObject(putObjectRequest, RequestBody.fromBytes(fileContent));
 
-            LOGGER.info("Successfully uploaded file to S3: {}", s3Key);
+            LOGGER.info("File uploaded successfully to S3: {}/{}", S3_BUCKET_NAME, key);
 
-            // Return the full S3 path (or just the key if preferred)
-            return s3Key;
+            // ✅ Return Full Resource URL
+    //        String resourceUrl = String.format("https://%s.s3.amazonaws.com/%s", S3_BUCKET_NAME, key);
+            return key;
 
+        } catch (S3Exception e) {
+            LOGGER.error("S3 upload failed: {}", e.awsErrorDetails().errorMessage(), e);
+            throw new RuntimeException("Failed to upload byte array to S3: " + e.awsErrorDetails().errorMessage(), e);
         } catch (Exception e) {
-            LOGGER.error("Error uploading file to S3", e);
-            throw new RuntimeException("Failed to upload file to S3", e);
+            LOGGER.error("General error during S3 upload: {}", e.getMessage(), e);
+            throw new RuntimeException("Error occurred while uploading byte array: " + e.getMessage(), e);
         }
     }
 

@@ -116,7 +116,7 @@ public class WebhookEventConsumer {
                 media.setFileName(webhookResponse.getFileName() != null ? webhookResponse.getFileName() : webhookResponse.getMessageId());
                 media.setMimeType(webhookResponse.getMimeType());
                 byte[] mediaBytes = downloadMedia(webhookResponse.getMediaId());
-                String s3MediaUrl = s3Service.uploadToS3(mediaBytes, media.getFileName(), media.getMimeType());
+                String s3MediaUrl = s3Service.uploadFile("bulkUpload", media.getFileName(), mediaBytes, media.getMimeType());
                 media.setUrl(s3MediaUrl);
                 media = mediaMetaDataRepository.save(media);
                 LOGGER.info("Saved media metadata with ID: {}", media.getId());
