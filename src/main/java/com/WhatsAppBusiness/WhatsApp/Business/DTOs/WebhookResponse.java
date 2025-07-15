@@ -11,6 +11,15 @@ public class WebhookResponse {
     private String caption;
     private String mimeType;
     private String fileName;
+    private String mediaUrl;
+
+    public String getMediaUrl() {
+        return mediaUrl;
+    }
+
+    public void setMediaUrl(String mediaUrl) {
+        this.mediaUrl = mediaUrl;
+    }
 
     public String getMediaId() {
         return mediaId;
