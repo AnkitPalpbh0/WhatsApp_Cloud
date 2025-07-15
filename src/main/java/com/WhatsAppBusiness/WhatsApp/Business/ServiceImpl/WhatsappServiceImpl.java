@@ -79,7 +79,7 @@ public class WhatsappServiceImpl implements WhatsappService {
 
         if (response.getStatusCode() != HttpStatus.OK) {
             LOGGER.error("Failed to upload file to WhatsApp");
-            throw new RuntimeException("Failed to upload file to WhatsApp");
+            return null;
         }
         String mediaId = response.getBody().get("id").toString();
         LOGGER.info("Media ID: {}", mediaId);

@@ -72,10 +72,10 @@ public class S3ServiceImpl implements S3Service {
 
         } catch (S3Exception e) {
             LOGGER.error("S3 error occurred: {}", e.awsErrorDetails().errorMessage());
-            throw new RuntimeException("Failed to download file from S3", e);
+            return null;
         } catch (Exception e) {
             LOGGER.error("Unexpected error occurred: {}", e.getMessage(), e);
-            throw new RuntimeException("Unexpected error occurred while downloading file", e);
+            return null;
         }
     }
 

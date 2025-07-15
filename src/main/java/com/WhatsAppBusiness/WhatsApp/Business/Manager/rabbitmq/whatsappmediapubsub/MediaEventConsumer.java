@@ -70,9 +70,17 @@ public class MediaEventConsumer {
 
         // Step 1: Download the file from the S3 URL
         File tempFile = s3Service.downloadFile(mediaRequest.getMediaUrl());
+        if (tempFile == null) {
+            LOGGER.error("Failed to download file from S3: {}", mediaRequest.getMediaUrl());
+            return;
+        }
 
         // Step 2: Upload file to WhatsApp Cloud
         String mediaId = whatsappService.uploadToWhatsApp(tempFile, mediaRequest.getMimeType());
+        if (mediaId == null) {
+            LOGGER.error("Failed to upload file to WhatsApp: {}", mediaRequest.getMediaUrl());
+            return;
+        }
 
         // Step 3: Send the media message to WhatsApp
         MessageResponse response = whatsappService.sendMediaMessage(mediaId, mediaRequest.getTo(), mediaRequest.getType(), mediaRequest.getCaption(), tempFile.getName());
